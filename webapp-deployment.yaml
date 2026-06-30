@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-rollout
+  namespace: default
+spec:
+  replicas: 3 # Wir nehmen extra 3 Pods, um das "Rolling Update" gleich auf der Konsole zu sehen
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp-container
+        # Wir starten mit Version 1 (v1)
+        image: sheogorath/build-details-server:v1
+        ports:
+        - containerPort: 8080
