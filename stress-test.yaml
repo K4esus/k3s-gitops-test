@@ -18,7 +18,7 @@ spec:
         image: polinux/stress:latest
         # Hier sagen wir dem Tool, dass es 150MB RAM belegen soll
         command: ["stress"]
-        args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "10"]
+        args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "0"] # <-- 0 statt 10!
         resources:
           requests:
             memory: "500Mi"
