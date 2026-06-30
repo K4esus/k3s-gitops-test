@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: default
+data:
+  APP_MODE: "Development-Test"
+  DB_URL: "jdbc:postgresql://localhost:5432/mydb"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+  namespace: default
+type: Opaque # Standard-Typ für beliebige Passwörter/Keys
+stringData:  # "stringData" erlaubt es uns, Passwörter im Git bequem als Klartext zu schreiben. K3s wandelt es im Cluster automatisch in Base64 um.
+  DB_PASSWORD: "MeinSuperSicheresPasswort123!"
