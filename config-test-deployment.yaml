@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-test-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-test
+  template:
+    metadata:
+      labels:
+        app: config-test
+    spec:
+      containers:
+      - name: test-container
+        image: ubuntu:latest
+        command: ["sleep", "infinity"] # Hält den Container unendlich am Leben
+        env:
+        # 1. Variable aus der ConfigMap holen
+        - name: MEIN_APP_MODUS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: APP_MODE
+        # 2. Variable aus dem Secret holen
+        - name: MEIN_GEHEIMES_PASSWORT
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: DB_PASSWORD
