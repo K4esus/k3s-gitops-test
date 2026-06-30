@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: daten-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce # Bedeutet: Der Speicher kann von einer Node gleichzeitig gelesen/beschrieben werden
+  storageClassName: local-path # Der eingebaute Storage-Provider von K3s
+  resources:
+    requests:
+      storage: 1Gi # Wir fordern 1 Gigabyte an
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage-node
+  template:
+    metadata:
+      labels:
+        app: storage-node
+    spec:
+      containers:
+      - name: ubuntu-container
+        image: ubuntu:latest
+        command: ["sleep", "infinity"]
+        # Hier sagen wir, WO der Speicher im Container auftauchen soll
+        volumeMounts:
+        - name: mein-speicher-volume
+          mountPath: /meine_daten
+      # Hier verknüpfen wir den Container mit dem PVC von oben
+      volumes:
+      - name: mein-speicher-volume
+        persistentVolumeClaim:
+          claimName: daten-pvc
