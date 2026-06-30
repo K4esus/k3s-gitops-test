@@ -16,6 +16,6 @@ spec:
       containers:
       - name: webapp-container
         # Wir starten mit einem echten, stabilen Nginx-Image als Version 1
-        image: nginx:1.25-kaputt
+        image: nginx:1.25
         ports:
         - containerPort: 80
