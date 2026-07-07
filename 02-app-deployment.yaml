@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meine-anwendung
+  namespace: default
+spec:
+  replicas: 2  # Wir testen das direkt mit mehreren Pods
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0  # Kein Pod darf während des Updates sterben
+      maxSurge: 1        # Erst ein neuer Pod, dann einen alten löschen
+  selector:
+    matchLabels:
+      app: meine-app
+  template:
+    metadata:
+      labels:
+        app: meine-app
+    spec:
+      containers:
+      - name: webserver
+        # Wir nutzen das offizielle, sichere und schlanke Nginx-Image
+        image: alpine/git:latest
+        command: ["/bin/sh", "-c"]
+        # Die App simuliert einen Webserver, der die Config ausgibt
+        args:
+          - |
+            echo "App gestartet..."
+            cat /app/config/config.json
+            # Ein simpler HTTP-Server auf Port 8080 für den Health-Check
+            while true; do 
+              echo -e "HTTP/1.1 200 OK\n\n Ich laufe stabil!" | nc -l -p 8080
+            done
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        
+        # HIER IST DER SICHERHEITSANKER:
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 5
+      volumes:
+      - name: config-volume
+        configMap:
+          name: dynamische-app-config
