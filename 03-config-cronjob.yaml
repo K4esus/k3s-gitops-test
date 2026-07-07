@@ -20,15 +20,15 @@ spec:
             args:
               - |
                 set -e
-                echo "=== KUBECTL INSTALLATION STRATEGIE ==="
+                echo "=== KUBECTL INSTALLATION STRATEGIE (ARM64) ==="
                 
-                # 1. Installiere curl, damit wir kubectl herunterladen können
+                # 1. Installiere curl
                 apk add --no-cache curl
                 
-                # 2. Lade das offizielle kubectl herunter
-                curl -LO "https://dl.k8s.io/release/v1.28.2/bin/linux/amd64/kubectl"
+                # 2. Lade das offizielle kubectl direkt für ARM64 (Apple Silicon) herunter
+                curl -LO "https://dl.k8s.io/release/v1.28.2/bin/linux/arm64/kubectl"
                 
-                # 3. Mache es ausführbar und verschiebe es in den System-Pfad (PATH)
+                # 3. Mache es ausführbar und verschiebe es in den System-Pfad
                 chmod +x ./kubectl
                 mv ./kubectl /usr/local/bin/kubectl
                 
