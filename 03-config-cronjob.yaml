@@ -4,25 +4,40 @@ metadata:
   name: config-puller-job
   namespace: default
 spec:
-  schedule: "*/1 * * * *" # Zum Testen: Jede Minute!
+  schedule: "*/1 * * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
         spec:
-          serviceAccountName: config-updater-sa # Nutzt die RBAC-Rechte
+          serviceAccountName: config-updater-sa
           containers:
           - name: updater
+            # Wir nehmen Alpine, das lässt sich garantiert fehlerfrei ziehen
             image: alpine:latest
-            imagePullPolicy: IfNotPresent # Ein offizielles, signiertes Image
+            imagePullPolicy: IfNotPresent
             command: ["/bin/sh", "-c"]
             args:
               - |
                 set -e
-                echo "=== LOKALER SIMULATIONS-START ==="
+                echo "=== KUBECTL INSTALLATION STRATEGIE ==="
                 
-                # Hier würde im echten Leben dein 'git pull' o.ä. stehen.
-                # Wir simulieren eine dynamische Änderung mit dem aktuellen Zeitstempel:
+                # 1. Installiere curl, damit wir kubectl herunterladen können
+                apk add --no-cache curl
+                
+                # 2. Lade das offizielle kubectl herunter
+                curl -LO "https://dl.k8s.io/release/v1.28.2/bin/linux/amd64/kubectl"
+                
+                # 3. Mache es ausführbar und verschiebe es in den System-Pfad (PATH)
+                chmod +x ./kubectl
+                mv ./kubectl /usr/local/bin/kubectl
+                
+                echo "Kubectl wurde erfolgreich installiert!"
+                kubectl version --client
+                
+                echo "=== STARTE KONFIGURATIONS-UPDATE ==="
+                
+                # 4. Erzeuge die neue, dynamische Config-Datei
                 echo "{\"status\": \"aktiv\", \"version\": \"1.0\", \"letztes_update\": \"$(date)\"}" > /tmp/neue-config.json
                 
                 echo "Schreibe geänderte Config in das Cluster..."
@@ -33,5 +48,5 @@ spec:
                 echo "Triggere sicheren Kubernetes Rolling-Restart..."
                 kubectl rollout restart deployment/meine-anwendung
                 
-                echo "=== SIMULATION ERFOLGREICH ==="
+                echo "=== PIPELINE ERFOLGREICH BEENDET ==="
           restartPolicy: OnFailure
