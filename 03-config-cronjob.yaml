@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: config-puller-job
+  namespace: default
+spec:
+  schedule: "*/1 * * * *" # Zum Testen: Jede Minute!
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: config-updater-sa # Nutzt die RBAC-Rechte
+          containers:
+          - name: updater
+            image: bitnami/kubectl:1.28 # Ein offizielles, signiertes Image
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                set -e
+                echo "=== LOKALER SIMULATIONS-START ==="
+                
+                # Hier würde im echten Leben dein 'git pull' o.ä. stehen.
+                # Wir simulieren eine dynamische Änderung mit dem aktuellen Zeitstempel:
+                echo "{\"status\": \"aktiv\", \"version\": \"1.0\", \"letztes_update\": \"$(date)\"}" > /tmp/neue-config.json
+                
+                echo "Schreibe geänderte Config in das Cluster..."
+                kubectl create configmap dynamische-app-config \
+                  --from-file=config.json=/tmp/neue-config.json \
+                  --dry-run=client -o yaml | kubectl apply -f -
+                
+                echo "Triggere sicheren Kubernetes Rolling-Restart..."
+                kubectl rollout restart deployment/meine-anwendung
+                
+                echo "=== SIMULATION ERFOLGREICH ==="
+          restartPolicy: OnFailure
