@@ -13,7 +13,7 @@ spec:
           serviceAccountName: config-updater-sa # Nutzt die RBAC-Rechte
           containers:
           - name: updater
-            image: rancher/k3s:latest # Ein offizielles, signiertes Image
+            image: rancher/k3s:v1.34.9-k3s1 # Ein offizielles, signiertes Image
             command: ["/bin/sh", "-c"]
             args:
               - |
