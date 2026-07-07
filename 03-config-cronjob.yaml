@@ -39,12 +39,13 @@ spec:
                 
                 echo "=== STARTE KONFIGURATIONS-UPDATE ==="
                 
-                # 4. Erzeuge die neue, dynamische Config-Datei
-                echo "{\"status\": \"aktiv\", \"version\": \"1.0\", \"letztes_update\": \"$(date)\"}" > /tmp/neue-config.json
+                # 4. Erzeuge die Datei direkt im aktuellen Verzeichnis als 'config.json'
+                echo "{\"status\": \"aktiv\", \"version\": \"1.0\", \"letztes_update\": \"$(date)\"}" > config.json
                 
                 echo "Schreibe geänderte Config in das Cluster..."
+                # Jetzt matchen Dateiname im Container und Key in der ConfigMap perfekt
                 kubectl create configmap dynamische-app-config \
-                  --from-file=config.json=/tmp/neue-config.json \
+                  --from-file=config.json \
                   --dry-run=client -o yaml | kubectl apply -f -
                 
                 echo "Triggere sicheren Kubernetes Rolling-Restart..."
