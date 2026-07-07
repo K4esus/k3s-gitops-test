@@ -13,7 +13,7 @@ spec:
           serviceAccountName: config-updater-sa # Nutzt die RBAC-Rechte
           containers:
           - name: updater
-            image: bitnami/kubectl:1.28 # Ein offizielles, signiertes Image
+            image: rancher/kubectl:v1.28.2 # Ein offizielles, signiertes Image
             command: ["/bin/sh", "-c"]
             args:
               - |
