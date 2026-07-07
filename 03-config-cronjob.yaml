@@ -10,7 +10,8 @@ spec:
   failedJobsHistoryLimit: 2      # Behalte max. zwei fehlerhafte Pods zur Fehlersuche
   jobTemplate:
     spec:
-# ... (der Rest bleibt gleich)
+      template:
+        spec:
           serviceAccountName: config-updater-sa
           containers:
           - name: updater
