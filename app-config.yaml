@@ -4,7 +4,7 @@ metadata:
   name: backend-config
   namespace: default
 data:
-  APP_MODE: "Development-Test"
+  APP_MODE: "Development-Test2"
   DB_URL: "jdbc:postgresql://localhost:5432/mydb"
 ---
 apiVersion: v1
